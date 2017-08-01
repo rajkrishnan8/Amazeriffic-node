@@ -1,0 +1,165 @@
+body {
+	background: #f9e933;
+	font-family: 'Droid Sans';
+}
+.amazeriffic {
+	font-style: italic;
+	color: orange;
+	font-family: 'Ubuntu', sans-serif;
+}
+
+header, main, footer {
+	min-width: 855px;
+}
+
+header .container, main .container, footer .container {
+	max-width: 855px;
+	margin: auto;
+}
+
+header nav a + a::before{
+	content: "|";
+	font-size: 1.3em;
+}
+
+main .container {
+	overflow: auto;
+	margin-top: 15px;
+	margin-bottom: 30px;
+}
+
+.tabs a span {
+	display: inline-block;
+	border-radius: 5px 5px 0 0;
+	width: 100px;
+	margin-right: 10px;
+	text-align: center;
+	background: #ddf;
+	padding: 5px;
+}
+
+.tabs a span.active {
+	background: #cce;
+}
+
+header {
+	background: white;
+	overflow: auto;
+	padding: 10px 0px 10px 0px;
+}
+
+header h1 {
+	float: left;
+	width: 570px;
+	font-size: 3em;
+}
+
+header nav {
+	float: right;
+	width: 285px;
+}
+
+main {
+	background: white;
+	overflow: auto;
+}
+
+main .content {
+	max-width: 570px;
+	float: left;
+}
+
+main .logo {
+	max-width: 285px;
+	float: right;
+}
+
+div .what {
+	padding: 10px;
+}
+
+div .why {
+	padding: 10px;
+}
+
+footer .contact {
+	width: 570px;
+	float: left;
+}
+
+footer .sitemap {
+	width: 285px;
+	float: right;
+}
+
+h1 {
+	font-size: 3em;
+	font-style: bold;
+	margin-bottom: 5px;
+}
+
+h2 {
+	font-size: 2em;
+	font-style: bold;
+	margin-bottom: 5px;
+}
+
+h3 {
+	font-size: 1.3em;
+	font-style: bold;
+	margin-bottom: 5px;
+}
+
+h4 {
+	font-size: 1.2em;
+	font-style: bold;
+	margin-bottom: 5px;
+}
+
+h5 {
+	font-size: 1.1em;
+	font-style: bold;
+	margin-bottom: 5px;
+}
+
+header a, footer a {
+	text-decoration: none;
+	color: gray;
+}
+
+a:hover { 
+	color:red;
+}
+footer .container {
+	margin-top: 25px;
+}
+
+footer div.contact h5 {
+	margin-bottom: 5px;
+}
+
+footer .sitemap ul{
+	columns: 2;
+}
+
+footer .sitemap ul li {
+	margin-bottom: 2px;
+}
+
+div.content {
+	background: #cce;
+	min-width: 800px;
+	padding: 15px 5px 15px 5px;	
+	border-radius: 0px 5px 5px 5px;
+}
+
+div.content ul li {
+	background: #ddf;
+	margin: 5px 0px 5px 0px;
+	padding: 3px;
+	border-radius: 3px;
+}
+
+div.content input, div.content p {
+	margin: 2px 5px 0px 5px;
+}
