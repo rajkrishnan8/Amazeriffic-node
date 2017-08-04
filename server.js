@@ -2,7 +2,8 @@ var express = require('express'),
 	http = require('http'),
 	mongoose = require('mongoose'),
 	app = express(),
-	toDos = [];
+	toDos = [],
+	port = process.env.PORT || 3000;
 	
 // Create our Express-powered HTTP server
 // and have it listen on port 3000
@@ -19,7 +20,7 @@ var ToDo = mongoose.model('ToDo', ToDoSchema);
 
 
 var initServer = function () {
-	http.createServer(app).listen(3000);
+	http.createServer(app).listen(port);
 
 	//set up our routes
 	app.get('/todos.json', function (req, res){
