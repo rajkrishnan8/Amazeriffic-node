@@ -1,53 +1,62 @@
 var express = require('express'),
 	http = require('http'),
+	mongoose = require('mongoose'),
 	app = express(),
-	toDos = [
-		{
-			description: "Get groceries", 
-			tags: ["shopping", "chores"]
-		},
-		{
-			description: "Make up some new ToDos", 
-			tags: ["writing", "work"]
-		},
-		{
-			description: "Prep for Monday's class",
-			tags: ["work", "teaching"]
-		},
-		{
-			description: "Answer emails",
-			tags: ["work"]
-		},
-		{
-			description: "Take Gracie to the park",
-			tags: ["chores", "pets"]
-		}, 
-		{
-			description: "Finish writing this book",
-			tags: ["writing", "work"]
-		}
-	];
+	toDos = [];
 	
 // Create our Express-powered HTTP server
 // and have it listen on port 3000
 app.use(express.static(__dirname + '/client'));
-
 // tell Express to parse incoming JSON Objects
 app.use(express.urlencoded());
 
-http.createServer(app).listen(3000);
-
-//set up our routes
-app.get('/todos.json', function (req, res){
-	res.json(toDos);
+var ToDoSchema = mongoose.Schema({
+	description: String,
+	tags: [ String ]
 });
 
-app.post('/todos', function(req, res) {
-	var newToDo = req.body;
+var ToDo = mongoose.model('ToDo', ToDoSchema);
 
-	console.log(newToDo);
 
-	toDos.push(newToDo);
+var initServer = function () {
+	http.createServer(app).listen(3000);
 
-	res.json({'message' : 'You posted to the server!'});
-})
+	//set up our routes
+	app.get('/todos.json', function (req, res){
+		ToDo.find({}, function (err, toDos) {
+			res.json(toDos);
+		});
+	});
+
+	app.post('/todos', function(req, res) {
+		console.log("POST req: " + req.body);
+		var newToDo = new ToDo({'description' : req.body.description, 'tags' : req.body.tags});
+		newToDo.save(function (err, result) {
+			if (err != null) {
+				console.log(err);
+				res.send('ERROR');
+			} else {
+				ToDo.find({}, function (err, result) {
+					if (err != null) {
+						res.send('ERROR');
+					}
+					res.json(result);
+				});
+			}
+		});
+		req.body;
+	});
+
+
+
+}
+
+// connect to mongoose
+mongoose.connect('mongodb://localhost/amazeriffic', function(err) {
+	if(err) {
+		console.log('Connection to MongoDB encountered error');
+	} else {
+		console.log('Connected to MongoDB');
+		initServer();
+	}
+});

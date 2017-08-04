@@ -89,6 +89,7 @@ var main = function () {
 							newToDo = {'description' : description, 'tags' : tags};
 
 						toDoObjects.push(newToDo);
+						organizedByTag.addToDo(newToDo.description, newToDo.tags);
 						
 						// here we'll do a quick post to our todos route
 						$.post('todos', newToDo, function (response) {
