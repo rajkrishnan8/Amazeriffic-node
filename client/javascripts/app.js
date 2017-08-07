@@ -28,55 +28,80 @@ var organizedByTags = function (toDoObjects) {
 var main = function () {
 	"use strict";
 
-	var toDoObjects;
+	var toDoObjects,
+		organizedByTag,
+		toDos,
+		tabs = [];
 
-	$.getJSON('todos.json', function(todos){
-		toDoObjects = todos;
-		initToDos();
-	});
+	var updateToDos = function (toDoObj) {
+		toDoObjects = toDoObj;
+		organizedByTag = organizedByTags(toDoObjects);
+		toDos = toDoObjects.map(function(todoObj){return todoObj.description;});
+	}
 	
 	var initToDos = function () {
-			var organizedByTag = organizedByTags(toDoObjects);
-			var toDos = toDoObjects.map(function(todoObj){return todoObj.description;});
-
-
-			$(".tabs span").toArray().forEach(function (element) {
-			// create a click handler for this element
-			$(element).on("click", function() {
-				var $element = $(element),
-					$content;
-
-				$(".tabs span").removeClass("active");
-				$(element).addClass("active");
-				$("main .content").empty();
-
-				if($element.parent().is(":nth-child(1)")) {
-					$content = $("<ul>");
-					for(var i = toDos.length-1; i>=0; i--){
-						$content.append($("<li>").text(toDos[i]));
-					}
-					$("main .content").append($content);
-				} else if ($element.parent().is(":nth-child(2)")){
-					$content = $("<ul>");
-					toDos.forEach(function(todo){
-						$content.append($("<li>").text(todo));
+			// set up tabs list 
+			// Newest
+			tabs.push( {
+				'name' : 'Newest',
+				'content' : function (callback) {
+					$.getJSON('todos.json', function(todos){
+						updateToDos(todos);
+						var $content;
+						$content = $("<ul>");
+						for(var i = toDos.length-1; i>=0; i--){
+							$content.append($("<li>").text(toDos[i]));
+						}
+						callback($content);
 					});
-					$("main .content").append($content);
-				} else if ($element.parent().is(":nth-child(3)")){
-					organizedByTag.list.forEach(function (tag) {
-						var $tagName = $("<h3>").text(tag.name),
-							$content = $("<ul>");
+				}
+			});
 
-						tag.toDos.forEach(function(description) {
-							var $li = $("<li>").text(description);
-							$content.append($li);
+			// Oldest
+			tabs.push( {
+				'name' : 'Oldest',
+				'content' : function (callback) {
+					$.getJSON('todos.json', function(todos){
+						updateToDos(todos);
+						var $content;
+						$content = $("<ul>");
+						toDos.forEach(function(todo){
+							$content.append($("<li>").text(todo));
 						});
+						callback($content);
+					});
+				}
+			});
 
-						$("main .content").append($tagName);
-						$("main .content").append($content);
-					})
+			// Tags
+			tabs.push( {
+				'name' : 'Tags',
+				'content' : function (callback) {
+					$.getJSON('todos.json', function(todos){
+						updateToDos(todos);
+						var $content;
 
-				} else if ($element.parent().is(":nth-child(4)")) {
+						$content = $('<div>');
+						organizedByTag.list.forEach(function (tag) {
+							var $tag = $('<h3>').text(tag.name),
+								$todoList = $('<ul>');
+
+							tag.toDos.forEach(function (toDo) {
+								$todoList.append($('<li>').text(toDo));
+							});
+
+							$content.append($tag.append($todoList));
+						});
+						callback($content);
+					});
+				}
+			});
+
+			// Add
+			tabs.push( {
+				'name' : 'Add',
+				'content' : function (callback) {
+					var $content;
 					var $input = $("<input>").addClass("todo"),
 						$inputLabel = $("<p>").text("Description:"),
 						$tagInput = $("<input>").addClass("tags"),
@@ -87,22 +112,14 @@ var main = function () {
 						var description = $("input.todo").val(),
 							tags = $("input.tags").val().split(','),
 							newToDo = {'description' : description, 'tags' : tags};
-
-						toDoObjects.push(newToDo);
-						organizedByTag.addToDo(newToDo.description, newToDo.tags);
 						
 						// here we'll do a quick post to our todos route
 						$.post('todos', newToDo, function (response) {
-							console.log('We posted and the server responded!');
-							console.log(response);
-						});
+							$input.val('');
+							$tagInput.val('');
 
-						toDos = toDoObjects.map(function (toDo) {
-							return toDo.description;
+							$('.tabs a:first-child span').trigger('click');
 						});
-						
-						$input.val('');
-						$tagInput.val('');
 					});
 
 					$content = $("<div>").append($inputLabel)
@@ -111,15 +128,42 @@ var main = function () {
 										 .append($tagInput)
 										 .append($button);
 
-					$("main .content").append($content);
+					callback($content);
 				}
+			});
 
-				return false;
-			})
-		});
+			// add tabs to the UI
+			tabs.forEach(function (tab) {
+				var $aElement = $('<a>').attr('href', ''),
+					$spanElement = $('<span>').text(tab.name);
 
-		$(".tabs a:first-child span").trigger("click");
+				$aElement.append($spanElement);
+				$spanElement.on('click', function(){
+					var $content;
+
+					$('.tabs a span').removeClass('active');
+					$spanElement.addClass('active');
+					$('main .content').empty();
+
+					// get the content from the 'content' function defined in the tab
+					tab.content(function ($content) {
+						$('main .content').append($content);
+					});
+
+					return false;
+				});
+
+				$('main .tabs').append($aElement);
+
+			});
+
+			$('.tabs a:first-child span').trigger('click');
 	}
+
+	$.getJSON('todos.json', function(todos){
+		updateToDos(todos);
+		initToDos();
+	});
 };
 
 $(document).ready(main);

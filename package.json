@@ -3,8 +3,12 @@
 	"description": "The best to-do list yada yada yada",
 	"version": "0.0.1",
 	"dependencies": {
-		"Express": "^3.0.1",
-		"express": "^3.21.2",
-		"mongoose": "4.11.x"
+		"express": "*",
+		"body-parser": "*",
+		"mongoose": "4.11.x",
+		"mongodb": "*"
+	},
+	"engines": {
+		"node": "8.2.1"
 	}
 }
